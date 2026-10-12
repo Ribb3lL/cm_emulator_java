@@ -30,9 +30,11 @@ public class TerminalGui extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        Color bgColor = new Color(30, 30, 30);
-        Color fgColor = new Color(220, 220, 220);
-        Font font = new Font("Monospaced", Font.PLAIN, 14);
+        Color bgColor = new Color(20, 20, 35);
+        Color fgColor = new Color(240, 240, 245);
+        Font font = new Font("Monospaced", Font.BOLD, 14);
+
+        
 
         outputArea = new JTextArea();
         outputArea.setBackground(bgColor);
@@ -47,14 +49,14 @@ public class TerminalGui extends JFrame {
         bottomPanel.setBackground(bgColor);
 
         promptLabel = new JLabel(core.getVfsName() + ":" + core.getCwd() + "$ ");
-        promptLabel.setForeground(new Color(50, 255, 100));
+        promptLabel.setForeground(new Color(0, 230, 255));
         promptLabel.setFont(font);
         promptLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 0));
 
         inputField = new JTextField();
         inputField.setBackground(bgColor);
-        inputField.setForeground(Color.WHITE);
-        inputField.setCaretColor(Color.WHITE);
+        inputField.setForeground(new Color(255, 90, 180));
+        inputField.setCaretColor(new Color(0, 230, 255));
         inputField.setFont(font);
         inputField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
