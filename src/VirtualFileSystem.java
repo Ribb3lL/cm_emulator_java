@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Виртуальная файловая система (VFS) в оперативной памяти (Этап 4).
+ * Виртуальная файловая система (VFS) в оперативной памяти (Этап 5).
  */
 public class VirtualFileSystem {
 
@@ -103,9 +103,6 @@ public class VirtualFileSystem {
         return "/" + String.join("/", list);
     }
 
-    /**
-     * Смена текущей рабочей директории (cd).
-     */
     public boolean changeDirectory(String target) {
         String norm = normalizePath(target);
         Node node = getNode(norm);
@@ -116,9 +113,6 @@ public class VirtualFileSystem {
         return false;
     }
 
-    /**
-     * Получение списка файлов и каталогов (ls).
-     */
     public List<String> listDirectory(String target) {
         String path = (target == null || target.isEmpty()) ? cwd : target;
         Node node = getNode(path);
@@ -128,9 +122,6 @@ public class VirtualFileSystem {
         return new ArrayList<>(node.children.keySet());
     }
 
-    /**
-     * Рекурсивное построение дерева каталогов (tree).
-     */
     public List<String> buildTree(String target) {
         String path = (target == null || target.isEmpty()) ? cwd : target;
         Node node = getNode(path);
@@ -153,5 +144,29 @@ public class VirtualFileSystem {
                 buildTreeRecursive(child, prefix + (isLast ? "    " : "│   "), lines);
             }
         }
+    }
+
+    /**
+     * Создание файла в оперативной памяти (команда touch).
+     * Физический диск не затрагивается.
+     */
+    public boolean touch(String path) {
+        if (path == null || path.trim().isEmpty()) {
+            return false;
+        }
+        String norm = normalizePath(path);
+        int lastSlash = norm.lastIndexOf('/');
+        String parentPath = (lastSlash == 0) ? "/" : norm.substring(0, lastSlash);
+        String fileName = norm.substring(lastSlash + 1);
+
+        Node parent = getNode(parentPath);
+        if (parent == null || !parent.isDir || fileName.isEmpty()) {
+            return false;
+        }
+
+        if (!parent.children.containsKey(fileName)) {
+            parent.children.put(fileName, new Node(fileName, false));
+        }
+        return true;
     }
 }

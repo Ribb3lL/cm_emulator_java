@@ -1,0 +1,12 @@
+conf-dump
+ls
+tree
+touch created_in_ram.txt
+touch docs\nested_ram.txt
+ls
+tree
+cd docs
+ls
+cd ..
+touch missing_dir\file.txt
+uptime

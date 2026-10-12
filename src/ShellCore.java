@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ядро командного процессора (Этап 4).
+ * Ядро командного процессора (Этап 5).
  */
 public class ShellCore {
     private final String vfsPath;
@@ -105,6 +105,17 @@ public class ShellCore {
                 return rootLabel + "\n(каталог пуст)";
             }
             return rootLabel + "\n" + String.join("\n", lines);
+        }
+        if (cmd.equals("touch")) {
+            if (args.isEmpty()) {
+                return "touch: пропущен операнд файла";
+            }
+            for (String file : args) {
+                if (!vfs.touch(file)) {
+                    return "touch: невозможно выполнить touch для '" + file + "': Каталог не существует";
+                }
+            }
+            return "";
         }
 
         return cmd + ": команда не найдена";

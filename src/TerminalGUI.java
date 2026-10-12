@@ -25,7 +25,6 @@ public class TerminalGui extends JFrame {
     public TerminalGui(ShellCore core) {
         this.core = core;
 
-        // Заголовок окна содержит имя VFS
         setTitle("Shell Emulator - [" + core.getVfsName() + "]");
         setSize(750, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,7 +73,6 @@ public class TerminalGui extends JFrame {
             }
         });
 
-        // 1. Запуск стартового скрипта при открытии окна
         runStartupScript();
     }
 
@@ -111,7 +109,6 @@ public class TerminalGui extends JFrame {
 
     public void runStartupScript() {
         String script = core.getScriptPath();
-        // 2. Безопасная проверка на null
         if (script == null || script.trim().isEmpty()) {
             return;
         }
