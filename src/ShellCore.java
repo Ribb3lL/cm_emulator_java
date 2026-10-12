@@ -1,18 +1,30 @@
 package src;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * Ядро командного процессора эмулятора оболочки.
+ * Ядро командного процессора (Этап 2).
  */
 public class ShellCore {
+    private final String vfsPath;
+    private final String scriptPath;
     private final String vfsName;
     private String cwd = "/";
 
-    public ShellCore(String vfsName) {
-        this.vfsName = vfsName;
+    public ShellCore(String vfsPath, String scriptPath) {
+        this.vfsPath = vfsPath;
+        this.scriptPath = scriptPath == null ? "" : scriptPath;
+        this.vfsName = new File(vfsPath).getName();
+    }
+
+    public String getVfsPath() {
+        return vfsPath;
+    }
+
+    public String getScriptPath() {
+        return scriptPath;
     }
 
     public String getVfsName() {
@@ -23,16 +35,12 @@ public class ShellCore {
         return cwd;
     }
 
-    /**
-     * Парсер: разделяет ввод на токены по пробелам.
-     */
     public List<String> parse(String line) {
         List<String> tokens = new ArrayList<>();
         if (line == null || line.trim().isEmpty()) {
             return tokens;
         }
-        String[] parts = line.trim().split(" ");
-        for (String p : parts) {
+        for (String p : line.trim().split(" ")) {
             if (!p.isEmpty()) {
                 tokens.add(p);
             }
@@ -40,9 +48,6 @@ public class ShellCore {
         return tokens;
     }
 
-    /**
-     * Выполняет команду и возвращает текстовый вывод.
-     */
     public String execute(String line) {
         List<String> tokens = parse(line);
         if (tokens.isEmpty()) {
@@ -53,19 +58,19 @@ public class ShellCore {
         List<String> args = tokens.subList(1, tokens.size());
 
         if (cmd.equals("exit")) {
-            if (!args.isEmpty()) {
-                return "exit: слишком много аргументов";
-            }
-            return "__EXIT__";
+            return args.isEmpty() ? "__EXIT__" : "exit: слишком много аргументов";
+        }
+        if (cmd.equals("conf-dump")) {
+            return "vfs_path=" + vfsPath + "\n"
+                 + "script_path=" + scriptPath + "\n"
+                 + "vfs_name=" + vfsName + "\n"
+                 + "cwd=" + cwd;
         }
         if (cmd.equals("ls")) {
-            return "[stub] ls вызван с аргументами: " + args;
+            return "[stub] ls: " + args;
         }
         if (cmd.equals("cd")) {
-            if (args.size() > 1) {
-                return "cd: слишком много аргументов";
-            }
-            return "[stub] cd вызван с аргументами: " + args;
+            return args.size() > 1 ? "cd: слишком много аргументов" : "[stub] cd: " + args;
         }
 
         return cmd + ": команда не найдена";

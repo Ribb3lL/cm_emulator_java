@@ -103,4 +103,38 @@ public class TerminalGui extends JFrame {
         }
         updatePrompt();
     }
+
+    public void runStartupScript() {
+        String script = core.getScriptPath();
+        if (script.isEmpty()) {
+            return;
+        }
+        java.io.File file = new java.io.File(script);
+        if (!file.exists()) {
+            appendText("[Ошибка скрипта]: файл '" + script + "' не найден.");
+            return;
+        }
+        appendText("--- Выполнение стартового скрипта: " + script + " ---");
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty()) {
+                    continue;
+                }
+                appendText(promptLabel.getText() + trimmed);
+                String res = core.execute(trimmed);
+                if ("__EXIT__".equals(res)) {
+                    dispose();
+                    System.exit(0);
+                } else if (!res.isEmpty()) {
+                    appendText(res);
+                }
+            }
+        } catch (Exception ex) {
+            appendText("[Ошибка чтения скрипта]: " + ex.getMessage());
+        }
+        appendText("--- Завершение стартового скрипта ---\n");
+        updatePrompt();
+    }
 }
