@@ -73,6 +73,9 @@ public class TerminalGui extends JFrame {
                 }
             }
         });
+
+        // 1. Запуск стартового скрипта при открытии окна
+        runStartupScript();
     }
 
     public void appendText(String text) {
@@ -98,6 +101,8 @@ public class TerminalGui extends JFrame {
         if ("__EXIT__".equals(res)) {
             dispose();
             System.exit(0);
+        } else if ("__CLEAR__".equals(res)) {
+            clearScreen();
         } else if (!res.isEmpty()) {
             appendText(res);
         }
@@ -106,7 +111,8 @@ public class TerminalGui extends JFrame {
 
     public void runStartupScript() {
         String script = core.getScriptPath();
-        if (script.isEmpty()) {
+        // 2. Безопасная проверка на null
+        if (script == null || script.trim().isEmpty()) {
             return;
         }
         java.io.File file = new java.io.File(script);
@@ -127,6 +133,8 @@ public class TerminalGui extends JFrame {
                 if ("__EXIT__".equals(res)) {
                     dispose();
                     System.exit(0);
+                } else if ("__CLEAR__".equals(res)) {
+                    clearScreen();
                 } else if (!res.isEmpty()) {
                     appendText(res);
                 }

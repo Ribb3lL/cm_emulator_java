@@ -1,22 +1,21 @@
 package src;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ядро командного процессора (Этап 2).
+ * Ядро командного процессора (Этап 3).
  */
 public class ShellCore {
     private final String vfsPath;
     private final String scriptPath;
-    private final String vfsName;
-    private String cwd = "/";
+    private final VirtualFileSystem vfs;
 
-    public ShellCore(String vfsPath, String scriptPath) {
+    public ShellCore(String vfsPath, String scriptPath) throws Exception {
         this.vfsPath = vfsPath;
         this.scriptPath = scriptPath == null ? "" : scriptPath;
-        this.vfsName = new File(vfsPath).getName();
+        // Загрузка VFS в оперативную память
+        this.vfs = new VirtualFileSystem(vfsPath);
     }
 
     public String getVfsPath() {
@@ -28,11 +27,11 @@ public class ShellCore {
     }
 
     public String getVfsName() {
-        return vfsName;
+        return vfs.getRootName();
     }
 
     public String getCwd() {
-        return cwd;
+        return vfs.getCwd();
     }
 
     public List<String> parse(String line) {
@@ -63,8 +62,8 @@ public class ShellCore {
         if (cmd.equals("conf-dump")) {
             return "vfs_path=" + vfsPath + "\n"
                  + "script_path=" + scriptPath + "\n"
-                 + "vfs_name=" + vfsName + "\n"
-                 + "cwd=" + cwd;
+                 + "vfs_name=" + getVfsName() + "\n"
+                 + "cwd=" + getCwd();
         }
         if (cmd.equals("ls")) {
             return "[stub] ls: " + args;
