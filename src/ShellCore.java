@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Ядро командного процессора (Этап 3).
+ * Ядро командного процессора (Этап 4).
  */
 public class ShellCore {
     private final String vfsPath;
     private final String scriptPath;
     private final VirtualFileSystem vfs;
+    private final long startTime;
 
     public ShellCore(String vfsPath, String scriptPath) throws Exception {
         this.vfsPath = vfsPath;
-        this.scriptPath = scriptPath == null ? "" : scriptPath;
-        // Загрузка VFS в оперативную память
+        this.scriptPath = (scriptPath == null) ? "" : scriptPath;
         this.vfs = new VirtualFileSystem(vfsPath);
+        this.startTime = System.currentTimeMillis();
     }
 
     public String getVfsPath() {
@@ -65,11 +66,45 @@ public class ShellCore {
                  + "vfs_name=" + getVfsName() + "\n"
                  + "cwd=" + getCwd();
         }
+        if (cmd.equals("clear")) {
+            return "__CLEAR__";
+        }
+        if (cmd.equals("uptime")) {
+            long seconds = (System.currentTimeMillis() - startTime) / 1000;
+            return "up " + seconds + " seconds, 1 user";
+        }
         if (cmd.equals("ls")) {
-            return "[stub] ls: " + args;
+            String path = args.isEmpty() ? "" : args.get(0);
+            List<String> items = vfs.listDirectory(path);
+            if (items == null) {
+                return "ls: невозможно получить доступ к '" + path + "': Нет такого файла или каталога";
+            }
+            return String.join("  ", items);
         }
         if (cmd.equals("cd")) {
-            return args.size() > 1 ? "cd: слишком много аргументов" : "[stub] cd: " + args;
+            if (args.isEmpty()) {
+                vfs.changeDirectory("/");
+                return "";
+            }
+            if (args.size() > 1) {
+                return "cd: слишком много аргументов";
+            }
+            if (!vfs.changeDirectory(args.get(0))) {
+                return "cd: " + args.get(0) + ": Нет такого файла или каталога";
+            }
+            return "";
+        }
+        if (cmd.equals("tree")) {
+            String path = args.isEmpty() ? "" : args.get(0);
+            List<String> lines = vfs.buildTree(path);
+            if (lines == null) {
+                return "tree: [" + path + "] ошибка открытия каталога";
+            }
+            String rootLabel = path.isEmpty() ? getCwd() : vfs.normalizePath(path);
+            if (lines.isEmpty()) {
+                return rootLabel + "\n(каталог пуст)";
+            }
+            return rootLabel + "\n" + String.join("\n", lines);
         }
 
         return cmd + ": команда не найдена";

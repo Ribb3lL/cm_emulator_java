@@ -1,0 +1,9 @@
+conf-dump
+ls
+uptime
+tree
+cd docs
+ls
+cd ..
+cd non_existing_dir
+tree docs
